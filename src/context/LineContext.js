@@ -18,6 +18,7 @@ type Options = {|
   session: ?Session,
   initialState: ?Object,
   requestContext: ?Object,
+  customAccessToken: ?string,
   shouldBatch: ?boolean,
   sendMethod: ?string,
 |};
@@ -28,6 +29,8 @@ class LineContext extends Context implements PlatformContext {
   _event: LineEvent = this._event;
 
   _session: ?Session = this._session;
+
+  _customAccessToken: ?string;
 
   _isReplied: boolean = false;
 
@@ -45,11 +48,12 @@ class LineContext extends Context implements PlatformContext {
     session,
     initialState,
     requestContext,
+    customAccessToken,
     shouldBatch,
     sendMethod,
   }: Options) {
     super({ client, event, session, initialState, requestContext });
-
+    this._customAccessToken = customAccessToken;
     this._shouldBatch = shouldBatch || false;
     this._sendMethod = sendMethod || 'push';
   }
@@ -60,6 +64,14 @@ class LineContext extends Context implements PlatformContext {
    */
   get platform(): string {
     return 'line';
+  }
+
+  /**
+   * Get applied access token.
+   *
+   */
+  get accessToken(): ?string {
+    return this._customAccessToken || this._client.accessToken;
   }
 
   /**
